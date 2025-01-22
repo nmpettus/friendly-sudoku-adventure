@@ -66,14 +66,14 @@ const Index = () => {
           </Button>
         </div>
 
+        <NumberControls onNumberSelect={handleNumberSelect} />
+        
         <SudokuBoard
           grid={grid}
           initialGrid={initialGrid}
           selectedCell={selectedCell}
           onCellSelect={handleCellSelect}
         />
-
-        <NumberControls onNumberSelect={handleNumberSelect} />
       </div>
     </div>
   );

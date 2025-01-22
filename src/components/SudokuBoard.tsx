@@ -22,6 +22,30 @@ const SudokuBoard = ({
     return value !== 0 && !isValidMove(grid, row, col, value);
   };
 
+  const isRowComplete = (row: number) => {
+    const rowValues = new Set(grid[row]);
+    return rowValues.size === 9 && !rowValues.has(0);
+  };
+
+  const isColumnComplete = (col: number) => {
+    const colValues = new Set(grid.map(row => row[col]));
+    return colValues.size === 9 && !colValues.has(0);
+  };
+
+  const isBoxComplete = (row: number, col: number) => {
+    const boxStartRow = Math.floor(row / 3) * 3;
+    const boxStartCol = Math.floor(col / 3) * 3;
+    const boxValues = new Set();
+    
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        boxValues.add(grid[boxStartRow + i][boxStartCol + j]);
+      }
+    }
+    
+    return boxValues.size === 9 && !boxValues.has(0);
+  };
+
   return (
     <div className="grid grid-cols-9 gap-0 max-w-[500px] mx-auto border-2 border-sudoku-border-bold">
       {grid.map((row, rowIndex) =>
@@ -37,6 +61,9 @@ const SudokuBoard = ({
                 : "text-primary hover:bg-sudoku-cell-highlight",
               isSelected(rowIndex, colIndex) && "bg-sudoku-cell-selected",
               isInvalid(rowIndex, colIndex) && "bg-sudoku-cell-error",
+              isRowComplete(rowIndex) && "bg-sudoku-complete-row",
+              isColumnComplete(colIndex) && "bg-sudoku-complete-col",
+              isBoxComplete(rowIndex, colIndex) && "bg-sudoku-complete-box",
               colIndex % 3 === 2 && "border-r-2 border-r-sudoku-border-bold",
               rowIndex % 3 === 2 && "border-b-2 border-b-sudoku-border-bold"
             )}

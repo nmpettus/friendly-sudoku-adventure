@@ -6,6 +6,7 @@ interface SudokuBoardProps {
   initialGrid: number[][];
   selectedCell: [number, number] | null;
   onCellSelect: (row: number, col: number) => void;
+  setGrid: (grid: number[][]) => void;  // Added this prop
 }
 
 const SudokuBoard = ({
@@ -13,6 +14,7 @@ const SudokuBoard = ({
   initialGrid,
   selectedCell,
   onCellSelect,
+  setGrid,  // Added this prop
 }: SudokuBoardProps) => {
   const [completedRows, setCompletedRows] = useState<number[]>([]);
   const [completedCols, setCompletedCols] = useState<number[]>([]);

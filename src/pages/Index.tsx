@@ -123,6 +123,7 @@ const Index = () => {
           initialGrid={initialGrid}
           selectedCell={selectedCell}
           onCellSelect={handleCellSelect}
+          setGrid={setGrid}
         />
       </div>
     </div>

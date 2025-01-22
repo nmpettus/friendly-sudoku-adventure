@@ -17,6 +17,7 @@ const SudokuBoard = ({
   const [completedRows, setCompletedRows] = useState<number[]>([]);
   const [completedCols, setCompletedCols] = useState<number[]>([]);
   const [completedBoxes, setCompletedBoxes] = useState<string[]>([]);
+  const [wrongPlacements, setWrongPlacements] = useState<string[]>([]);
 
   const isRowComplete = (row: number) => {
     const numbers = new Set(grid[row].filter(n => n !== 0));
@@ -43,14 +44,49 @@ const SudokuBoard = ({
     return `${Math.floor(row / 3) * 3}-${Math.floor(col / 3) * 3}`;
   };
 
+  const isValidPlacement = (row: number, col: number, value: number): boolean => {
+    // Check row
+    for (let i = 0; i < 9; i++) {
+      if (i !== col && grid[row][i] === value) return false;
+    }
+    
+    // Check column
+    for (let i = 0; i < 9; i++) {
+      if (i !== row && grid[i][col] === value) return false;
+    }
+    
+    // Check 3x3 box
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (boxRow + i !== row || boxCol + j !== col) {
+          if (grid[boxRow + i][boxCol + j] === value) return false;
+        }
+      }
+    }
+    
+    return true;
+  };
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
     const checkCompletions = () => {
-      // Clear any existing highlights first
       setCompletedRows([]);
       setCompletedCols([]);
       setCompletedBoxes([]);
+
+      // Check for wrong placements
+      const newWrongPlacements: string[] = [];
+      grid.forEach((row, rowIndex) => {
+        row.forEach((value, colIndex) => {
+          if (value !== 0 && !isValidPlacement(rowIndex, colIndex, value)) {
+            newWrongPlacements.push(`${rowIndex}-${colIndex}`);
+          }
+        });
+      });
+      setWrongPlacements(newWrongPlacements);
 
       // Check for newly completed rows
       const newCompletedRows = Array.from({ length: 9 }, (_, i) => i)
@@ -70,13 +106,11 @@ const SudokuBoard = ({
         }
       }
 
-      // Only update states if there are new completions
       if (newCompletedRows.length > 0 || newCompletedCols.length > 0 || newCompletedBoxes.length > 0) {
         setCompletedRows(newCompletedRows);
         setCompletedCols(newCompletedCols);
         setCompletedBoxes(newCompletedBoxes);
 
-        // Clear highlights after 1 second
         timer = setTimeout(() => {
           setCompletedRows([]);
           setCompletedCols([]);
@@ -87,7 +121,6 @@ const SudokuBoard = ({
 
     checkCompletions();
 
-    // Cleanup function to clear any existing timer and highlights
     return () => {
       if (timer) {
         clearTimeout(timer);
@@ -98,6 +131,20 @@ const SudokuBoard = ({
     };
   }, [grid]);
 
+  const handleCellClick = (row: number, col: number) => {
+    if (initialGrid[row][col] !== 0) return;
+    
+    // If the cell is wrong and clicked again, clear it
+    if (wrongPlacements.includes(`${row}-${col}`)) {
+      const newGrid = grid.map(r => [...r]);
+      newGrid[row][col] = 0;
+      setGrid(newGrid);
+      return;
+    }
+    
+    onCellSelect(row, col);
+  };
+
   return (
     <div className="grid grid-cols-9 gap-0.5 bg-gray-300 p-0.5 max-w-[500px] mx-auto">
       {grid.map((row, rowIndex) =>
@@ -107,6 +154,7 @@ const SudokuBoard = ({
           const isHighlightedRow = completedRows.includes(rowIndex);
           const isHighlightedCol = completedCols.includes(colIndex);
           const isHighlightedBox = completedBoxes.includes(getBoxCoords(rowIndex, colIndex));
+          const isWrong = wrongPlacements.includes(`${rowIndex}-${colIndex}`);
 
           return (
             <button
@@ -116,13 +164,14 @@ const SudokuBoard = ({
                 "focus:outline-none focus:ring-2 focus:ring-blue-500",
                 isInitial ? "bg-gray-100 text-gray-900" : "bg-white text-blue-600",
                 isSelected && "bg-blue-100",
-                isHighlightedRow && "bg-[#F2FCE2]",
-                isHighlightedCol && "bg-[#E5DEFF]",
-                isHighlightedBox && "bg-[#FEF7CD]",
+                isWrong && "bg-red-100",
+                !isWrong && isHighlightedRow && "bg-[#F2FCE2]",
+                !isWrong && isHighlightedCol && "bg-[#E5DEFF]",
+                !isWrong && isHighlightedBox && "bg-[#FEF7CD]",
                 (colIndex + 1) % 3 === 0 && colIndex < 8 && "border-r-2 border-gray-400",
                 (rowIndex + 1) % 3 === 0 && rowIndex < 8 && "border-b-2 border-gray-400"
               )}
-              onClick={() => onCellSelect(rowIndex, colIndex)}
+              onClick={() => handleCellClick(rowIndex, colIndex)}
               disabled={isInitial}
             >
               {cell !== 0 ? cell : ""}

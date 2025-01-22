@@ -97,12 +97,14 @@ const Index = () => {
                       <li>Click on any empty cell you want to fill</li>
                       <li>Select a number from the number pad above the grid</li>
                       <li>Continue until you complete the puzzle</li>
+                      <li>Click a red square again to erase a wrong number</li>
                     </ol>
                   </div>
                   
                   <div>
                     <h3 className="font-semibold mb-2">Visual Feedback:</h3>
                     <ul className="list-disc list-inside space-y-2">
+                      <li>Red background: Wrong number placement</li>
                       <li>Light green highlight: Completed row</li>
                       <li>Light purple highlight: Completed column</li>
                       <li>Light yellow highlight: Completed 3x3 box</li>

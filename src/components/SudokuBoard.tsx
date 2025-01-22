@@ -52,37 +52,58 @@ const SudokuBoard = ({
   };
 
   useEffect(() => {
-    // Check for newly completed rows
-    const newCompletedRows = Array.from({ length: 9 }, (_, i) => i)
-      .filter(row => isRowComplete(row));
-    
-    // Check for newly completed columns
-    const newCompletedCols = Array.from({ length: 9 }, (_, i) => i)
-      .filter(col => isColumnComplete(col));
-    
-    // Check for newly completed boxes
-    const newCompletedBoxes = [];
-    for (let row = 0; row < 9; row += 3) {
-      for (let col = 0; col < 9; col += 3) {
-        if (isBoxComplete(row, col)) {
-          newCompletedBoxes.push(`${row}-${col}`);
-        }
-      }
-    }
+    let timer: number;
 
-    // Update states for newly completed sections
-    setCompletedRows(newCompletedRows);
-    setCompletedCols(newCompletedCols);
-    setCompletedBoxes(newCompletedBoxes);
-
-    // Clear highlights after 1 second
-    const timer = setTimeout(() => {
+    const checkCompletions = () => {
+      // Clear any existing highlights first
       setCompletedRows([]);
       setCompletedCols([]);
       setCompletedBoxes([]);
-    }, 1000);
 
-    return () => clearTimeout(timer);
+      // Check for newly completed rows
+      const newCompletedRows = Array.from({ length: 9 }, (_, i) => i)
+        .filter(row => isRowComplete(row));
+      
+      // Check for newly completed columns
+      const newCompletedCols = Array.from({ length: 9 }, (_, i) => i)
+        .filter(col => isColumnComplete(col));
+      
+      // Check for newly completed boxes
+      const newCompletedBoxes = [];
+      for (let row = 0; row < 9; row += 3) {
+        for (let col = 0; col < 9; col += 3) {
+          if (isBoxComplete(row, col)) {
+            newCompletedBoxes.push(`${row}-${col}`);
+          }
+        }
+      }
+
+      // Only update states if there are new completions
+      if (newCompletedRows.length > 0 || newCompletedCols.length > 0 || newCompletedBoxes.length > 0) {
+        setCompletedRows(newCompletedRows);
+        setCompletedCols(newCompletedCols);
+        setCompletedBoxes(newCompletedBoxes);
+
+        // Clear highlights after 1 second
+        timer = window.setTimeout(() => {
+          setCompletedRows([]);
+          setCompletedCols([]);
+          setCompletedBoxes([]);
+        }, 1000);
+      }
+    };
+
+    checkCompletions();
+
+    // Cleanup function to clear any existing timer and highlights
+    return () => {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+      setCompletedRows([]);
+      setCompletedCols([]);
+      setCompletedBoxes([]);
+    };
   }, [grid]);
 
   return (

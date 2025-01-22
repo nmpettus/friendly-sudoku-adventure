@@ -4,6 +4,7 @@ import path from "path"
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // This ensures assets are loaded relative to index.html
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

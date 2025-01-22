@@ -1,6 +1,5 @@
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { isValidMove } from "@/utils/sudokuGenerator";
-import { useState, useEffect } from "react";
 
 interface SudokuBoardProps {
   grid: number[][];
@@ -19,40 +18,33 @@ const SudokuBoard = ({
   const [completedCols, setCompletedCols] = useState<number[]>([]);
   const [completedBoxes, setCompletedBoxes] = useState<string[]>([]);
 
-  const isInitialCell = (row: number, col: number) => initialGrid[row][col] !== 0;
-  const isSelected = (row: number, col: number) =>
-    selectedCell?.[0] === row && selectedCell?.[1] === col;
-  const isInvalid = (row: number, col: number) => {
-    const value = grid[row][col];
-    return value !== 0 && !isValidMove(grid, row, col, value);
-  };
-
   const isRowComplete = (row: number) => {
-    const rowValues = new Set(grid[row]);
-    return rowValues.size === 9 && !rowValues.has(0);
+    const numbers = new Set(grid[row].filter(n => n !== 0));
+    return numbers.size === 9;
   };
 
   const isColumnComplete = (col: number) => {
-    const colValues = new Set(grid.map(row => row[col]));
-    return colValues.size === 9 && !colValues.has(0);
+    const numbers = new Set(grid.map(row => row[col]).filter(n => n !== 0));
+    return numbers.size === 9;
   };
 
-  const isBoxComplete = (row: number, col: number) => {
-    const boxStartRow = Math.floor(row / 3) * 3;
-    const boxStartCol = Math.floor(col / 3) * 3;
-    const boxValues = new Set();
-    
+  const isBoxComplete = (startRow: number, startCol: number) => {
+    const numbers = new Set();
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        boxValues.add(grid[boxStartRow + i][boxStartCol + j]);
+        const num = grid[startRow + i][startCol + j];
+        if (num !== 0) numbers.add(num);
       }
     }
-    
-    return boxValues.size === 9 && !boxValues.has(0);
+    return numbers.size === 9;
+  };
+
+  const getBoxCoords = (row: number, col: number) => {
+    return `${Math.floor(row / 3) * 3}-${Math.floor(col / 3) * 3}`;
   };
 
   useEffect(() => {
-    let timer: number;
+    let timer: ReturnType<typeof setTimeout>;
 
     const checkCompletions = () => {
       // Clear any existing highlights first
@@ -85,7 +77,7 @@ const SudokuBoard = ({
         setCompletedBoxes(newCompletedBoxes);
 
         // Clear highlights after 1 second
-        timer = window.setTimeout(() => {
+        timer = setTimeout(() => {
           setCompletedRows([]);
           setCompletedCols([]);
           setCompletedBoxes([]);
@@ -98,7 +90,7 @@ const SudokuBoard = ({
     // Cleanup function to clear any existing timer and highlights
     return () => {
       if (timer) {
-        window.clearTimeout(timer);
+        clearTimeout(timer);
       }
       setCompletedRows([]);
       setCompletedCols([]);
@@ -107,33 +99,36 @@ const SudokuBoard = ({
   }, [grid]);
 
   return (
-    <div className="grid grid-cols-9 gap-0 max-w-[500px] mx-auto border-2 border-sudoku-border-bold">
+    <div className="grid grid-cols-9 gap-0.5 bg-gray-300 p-0.5 max-w-[500px] mx-auto">
       {grid.map((row, rowIndex) =>
-        row.map((cell, colIndex) => (
-          <button
-            key={`${rowIndex}-${colIndex}`}
-            className={cn(
-              "w-[40px] h-[40px] sm:w-[55px] sm:h-[55px] flex items-center justify-center",
-              "border border-sudoku-border text-lg font-medium transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-primary",
-              isInitialCell(rowIndex, colIndex)
-                ? "font-bold"
-                : "text-primary hover:bg-sudoku-cell-highlight",
-              isSelected(rowIndex, colIndex) && "bg-sudoku-cell-selected",
-              isInvalid(rowIndex, colIndex) && "bg-sudoku-cell-error",
-              completedRows.includes(rowIndex) && "bg-sudoku-complete-row transition-colors duration-1000",
-              completedCols.includes(colIndex) && "bg-sudoku-complete-col transition-colors duration-1000",
-              completedBoxes.includes(`${Math.floor(rowIndex/3)*3}-${Math.floor(colIndex/3)*3}`) && 
-                "bg-sudoku-complete-box transition-colors duration-1000",
-              colIndex % 3 === 2 && "border-r-2 border-r-sudoku-border-bold",
-              rowIndex % 3 === 2 && "border-b-2 border-b-sudoku-border-bold"
-            )}
-            onClick={() => onCellSelect(rowIndex, colIndex)}
-            disabled={isInitialCell(rowIndex, colIndex)}
-          >
-            {cell !== 0 ? cell : ""}
-          </button>
-        ))
+        row.map((cell, colIndex) => {
+          const isInitial = initialGrid[rowIndex][colIndex] !== 0;
+          const isSelected = selectedCell?.[0] === rowIndex && selectedCell?.[1] === colIndex;
+          const isHighlightedRow = completedRows.includes(rowIndex);
+          const isHighlightedCol = completedCols.includes(colIndex);
+          const isHighlightedBox = completedBoxes.includes(getBoxCoords(rowIndex, colIndex));
+
+          return (
+            <button
+              key={`${rowIndex}-${colIndex}`}
+              className={cn(
+                "aspect-square flex items-center justify-center text-sm sm:text-lg font-semibold transition-colors",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                isInitial ? "bg-gray-100 text-gray-900" : "bg-white text-blue-600",
+                isSelected && "bg-blue-100",
+                isHighlightedRow && "bg-[#F2FCE2]",
+                isHighlightedCol && "bg-[#E5DEFF]",
+                isHighlightedBox && "bg-[#FEF7CD]",
+                (colIndex + 1) % 3 === 0 && colIndex < 8 && "border-r-2 border-gray-400",
+                (rowIndex + 1) % 3 === 0 && rowIndex < 8 && "border-b-2 border-gray-400"
+              )}
+              onClick={() => onCellSelect(rowIndex, colIndex)}
+              disabled={isInitial}
+            >
+              {cell !== 0 ? cell : ""}
+            </button>
+          );
+        })
       )}
     </div>
   );

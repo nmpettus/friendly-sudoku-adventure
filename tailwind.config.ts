@@ -60,8 +60,8 @@ export default {
           border: "#e0e0e0",
           "border-bold": "#9e9e9e",
           "complete-row": "#F2FCE2",
-          "complete-col": "#D3E4FD",
-          "complete-box": "#FDE1D3",
+          "complete-col": "#E5DEFF",
+          "complete-box": "#FEF7CD",
         },
       },
       borderRadius: {

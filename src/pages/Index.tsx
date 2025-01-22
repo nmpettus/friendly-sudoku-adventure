@@ -4,7 +4,15 @@ import SudokuBoard from "@/components/SudokuBoard";
 import NumberControls from "@/components/NumberControls";
 import DifficultySelector from "@/components/DifficultySelector";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, HelpCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -51,19 +59,59 @@ const Index = () => {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-4">Sudoku</h1>
         
-        <div className="flex justify-between items-center mb-2">
-          <DifficultySelector
-            selectedDifficulty={difficulty}
-            onSelectDifficulty={handleDifficultyChange}
-          />
-          <Button
-            onClick={handleNewGame}
-            variant="outline"
-            size="icon"
-            className="w-10 h-10"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <DifficultySelector
+              selectedDifficulty={difficulty}
+              onSelectDifficulty={handleDifficultyChange}
+            />
+            <Button
+              onClick={handleNewGame}
+              variant="outline"
+              size="icon"
+              className="w-10 h-10"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <HelpCircle className="h-4 w-4" />
+                How to Play
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>How to Play Sudoku</DialogTitle>
+                <DialogDescription className="space-y-4 pt-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">Basic Rules:</h3>
+                    <p>Fill in the grid so that every row, column, and 3x3 box contains the numbers 1-9 without repeating.</p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">How to Play:</h3>
+                    <ol className="list-decimal list-inside space-y-2">
+                      <li>Click on any empty cell you want to fill</li>
+                      <li>Select a number from the number pad above the grid</li>
+                      <li>Continue until you complete the puzzle</li>
+                    </ol>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">Visual Feedback:</h3>
+                    <ul className="list-disc list-inside space-y-2">
+                      <li>Light green highlight: Completed row</li>
+                      <li>Light purple highlight: Completed column</li>
+                      <li>Light yellow highlight: Completed 3x3 box</li>
+                    </ul>
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <NumberControls onNumberSelect={handleNumberSelect} />

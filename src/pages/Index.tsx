@@ -59,25 +59,26 @@ const Index = () => {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-4">Sudoku</h1>
         
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <DifficultySelector
-              selectedDifficulty={difficulty}
-              onSelectDifficulty={handleDifficultyChange}
-            />
-            <Button
-              onClick={handleNewGame}
-              variant="outline"
-              size="icon"
-              className="w-10 h-10"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="flex justify-center items-center gap-4 mb-6">
+          <DifficultySelector
+            selectedDifficulty={difficulty}
+            onSelectDifficulty={handleDifficultyChange}
+          />
+          <Button
+            onClick={handleNewGame}
+            variant="outline"
+            size="icon"
+            className="w-10 h-10 bg-purple-100 hover:bg-purple-200"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button 
+                variant="outline" 
+                className="gap-2 bg-blue-100 hover:bg-blue-200"
+              >
                 <HelpCircle className="h-4 w-4" />
                 How to Play
               </Button>

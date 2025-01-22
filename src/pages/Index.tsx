@@ -49,9 +49,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">Sudoku</h1>
+        <h1 className="text-3xl font-bold text-center mb-4">Sudoku</h1>
         
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-2">
           <DifficultySelector
             selectedDifficulty={difficulty}
             onSelectDifficulty={handleDifficultyChange}

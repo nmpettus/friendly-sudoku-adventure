@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { isValidMove } from "@/utils/sudokuGenerator";
+import { useState, useEffect } from "react";
 
 interface SudokuBoardProps {
   grid: number[][];
@@ -14,6 +15,10 @@ const SudokuBoard = ({
   selectedCell,
   onCellSelect,
 }: SudokuBoardProps) => {
+  const [completedRows, setCompletedRows] = useState<number[]>([]);
+  const [completedCols, setCompletedCols] = useState<number[]>([]);
+  const [completedBoxes, setCompletedBoxes] = useState<string[]>([]);
+
   const isInitialCell = (row: number, col: number) => initialGrid[row][col] !== 0;
   const isSelected = (row: number, col: number) =>
     selectedCell?.[0] === row && selectedCell?.[1] === col;
@@ -46,6 +51,40 @@ const SudokuBoard = ({
     return boxValues.size === 9 && !boxValues.has(0);
   };
 
+  useEffect(() => {
+    // Check for newly completed rows
+    const newCompletedRows = Array.from({ length: 9 }, (_, i) => i)
+      .filter(row => isRowComplete(row));
+    
+    // Check for newly completed columns
+    const newCompletedCols = Array.from({ length: 9 }, (_, i) => i)
+      .filter(col => isColumnComplete(col));
+    
+    // Check for newly completed boxes
+    const newCompletedBoxes = [];
+    for (let row = 0; row < 9; row += 3) {
+      for (let col = 0; col < 9; col += 3) {
+        if (isBoxComplete(row, col)) {
+          newCompletedBoxes.push(`${row}-${col}`);
+        }
+      }
+    }
+
+    // Update states for newly completed sections
+    setCompletedRows(newCompletedRows);
+    setCompletedCols(newCompletedCols);
+    setCompletedBoxes(newCompletedBoxes);
+
+    // Clear highlights after 1 second
+    const timer = setTimeout(() => {
+      setCompletedRows([]);
+      setCompletedCols([]);
+      setCompletedBoxes([]);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [grid]);
+
   return (
     <div className="grid grid-cols-9 gap-0 max-w-[500px] mx-auto border-2 border-sudoku-border-bold">
       {grid.map((row, rowIndex) =>
@@ -61,9 +100,10 @@ const SudokuBoard = ({
                 : "text-primary hover:bg-sudoku-cell-highlight",
               isSelected(rowIndex, colIndex) && "bg-sudoku-cell-selected",
               isInvalid(rowIndex, colIndex) && "bg-sudoku-cell-error",
-              isRowComplete(rowIndex) && "bg-sudoku-complete-row",
-              isColumnComplete(colIndex) && "bg-sudoku-complete-col",
-              isBoxComplete(rowIndex, colIndex) && "bg-sudoku-complete-box",
+              completedRows.includes(rowIndex) && "bg-sudoku-complete-row transition-colors duration-1000",
+              completedCols.includes(colIndex) && "bg-sudoku-complete-col transition-colors duration-1000",
+              completedBoxes.includes(`${Math.floor(rowIndex/3)*3}-${Math.floor(colIndex/3)*3}`) && 
+                "bg-sudoku-complete-box transition-colors duration-1000",
               colIndex % 3 === 2 && "border-r-2 border-r-sudoku-border-bold",
               rowIndex % 3 === 2 && "border-b-2 border-b-sudoku-border-bold"
             )}

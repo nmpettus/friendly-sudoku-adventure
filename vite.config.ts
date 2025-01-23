@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
-  base: './', // This ensures assets are loaded relative to index.html
+  base: 'http://godlyai.org', // Updated base URL for your website
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

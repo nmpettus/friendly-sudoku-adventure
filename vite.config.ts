@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
-  base: 'http://godlyai.org', // Updated base URL for your website
+  base: '/sudoku/', // Updated base URL for the subdirectory
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

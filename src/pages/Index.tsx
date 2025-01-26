@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { generateSudoku } from "@/utils/sudokuGenerator";
 import SudokuBoard from "@/components/SudokuBoard";
 import NumberControls from "@/components/NumberControls";
@@ -21,12 +21,14 @@ const Index = () => {
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [grid, setGrid] = useState(() => generateSudoku(difficulty));
   const [initialGrid, setInitialGrid] = useState(() => grid.map(row => [...row]));
+  const [completedNumbers, setCompletedNumbers] = useState<number[]>([]);
 
   const handleNewGame = useCallback(() => {
     const newGrid = generateSudoku(difficulty);
     setGrid(newGrid);
     setInitialGrid(newGrid.map(row => [...row]));
     setSelectedCell(null);
+    setCompletedNumbers([]);
   }, [difficulty]);
 
   const handleCellSelect = (row: number, col: number) => {
@@ -52,7 +54,27 @@ const Index = () => {
     setGrid(newGrid);
     setInitialGrid(newGrid.map(row => [...row]));
     setSelectedCell(null);
+    setCompletedNumbers([]);
   };
+
+  useEffect(() => {
+    // Check for completed numbers
+    const numbers = new Set<number>();
+    for (let num = 1; num <= 9; num++) {
+      let count = 0;
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === num) {
+            count++;
+          }
+        }
+      }
+      if (count === 9) {
+        numbers.add(num);
+      }
+    }
+    setCompletedNumbers(Array.from(numbers));
+  }, [grid]);
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -113,6 +135,7 @@ const Index = () => {
                         <li>Light green highlight: Completed row</li>
                         <li>Light purple highlight: Completed column</li>
                         <li>Light yellow highlight: Completed 3x3 box</li>
+                        <li>Disabled numbers: All instances of that number have been placed</li>
                       </ul>
                     </div>
                   </DialogDescription>
@@ -122,7 +145,10 @@ const Index = () => {
           </div>
         </div>
 
-        <NumberControls onNumberSelect={handleNumberSelect} />
+        <NumberControls 
+          onNumberSelect={handleNumberSelect} 
+          completedNumbers={completedNumbers}
+        />
         
         <SudokuBoard
           grid={grid}

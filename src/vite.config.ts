@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
-  base: './', // Changed to relative path for flexible deployment
+  base: '/sudoku/', // Updated to match the subdirectory
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

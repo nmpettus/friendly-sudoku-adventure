@@ -6,7 +6,7 @@ interface SudokuBoardProps {
   initialGrid: number[][];
   selectedCell: [number, number] | null;
   onCellSelect: (row: number, col: number) => void;
-  setGrid: (grid: number[][]) => void;  // Added this prop
+  setGrid: (grid: number[][]) => void;
 }
 
 const SudokuBoard = ({
@@ -14,7 +14,7 @@ const SudokuBoard = ({
   initialGrid,
   selectedCell,
   onCellSelect,
-  setGrid,  // Added this prop
+  setGrid,
 }: SudokuBoardProps) => {
   const [completedRows, setCompletedRows] = useState<number[]>([]);
   const [completedCols, setCompletedCols] = useState<number[]>([]);
@@ -167,9 +167,9 @@ const SudokuBoard = ({
                 isInitial ? "bg-gray-100 text-gray-900" : "bg-white text-blue-600",
                 isSelected && "bg-blue-100",
                 isWrong && "bg-red-100",
-                !isWrong && isHighlightedRow && "bg-[#F2FCE2]",
-                !isWrong && isHighlightedCol && "bg-[#E5DEFF]",
-                !isWrong && isHighlightedBox && "bg-[#FEF7CD]",
+                !isWrong && isHighlightedRow && "bg-[#F2FCE2] animate-bloom",
+                !isWrong && isHighlightedCol && "bg-[#E5DEFF] animate-bloom",
+                !isWrong && isHighlightedBox && "bg-[#FEF7CD] animate-bloom",
                 (colIndex + 1) % 3 === 0 && colIndex < 8 && "border-r-2 border-gray-400",
                 (rowIndex + 1) % 3 === 0 && rowIndex < 8 && "border-b-2 border-gray-400"
               )}

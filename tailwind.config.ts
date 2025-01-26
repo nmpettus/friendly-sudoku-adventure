@@ -20,13 +20,13 @@ export default {
     extend: {
       keyframes: {
         bloom: {
-          '0%': { transform: 'scale(1)', opacity: '0.7' },
-          '50%': { transform: 'scale(1.05)', opacity: '0.85' },
+          '0%': { transform: 'scale(1)', opacity: '0.5' },
+          '50%': { transform: 'scale(1.1)', opacity: '0.9' },
           '100%': { transform: 'scale(1)', opacity: '1' }
         }
       },
       animation: {
-        bloom: 'bloom 0.5s ease-in-out'
+        bloom: 'bloom 1s ease-in-out'
       },
       colors: {
         border: "hsl(var(--border))",

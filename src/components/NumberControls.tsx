@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface NumberControlsProps {
   onNumberSelect: (number: number) => void;
@@ -9,15 +10,21 @@ const NumberControls = ({ onNumberSelect, completedNumbers }: NumberControlsProp
   return (
     <div className="flex justify-center gap-1 sm:gap-2 mb-4">
       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
-        <Button
-          key={number}
-          onClick={() => onNumberSelect(number)}
-          variant="outline"
-          className="h-8 w-8 sm:h-12 sm:w-12 text-base sm:text-xl font-semibold p-0"
-          disabled={completedNumbers.includes(number)}
-        >
-          {number}
-        </Button>
+        <div key={number} className="relative">
+          <Button
+            onClick={() => onNumberSelect(number)}
+            variant="outline"
+            className="h-8 w-8 sm:h-12 sm:w-12 text-base sm:text-xl font-semibold p-0"
+            disabled={completedNumbers.includes(number)}
+          >
+            {number}
+            {completedNumbers.includes(number) && (
+              <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+                <X className="h-6 w-6 text-muted-foreground" />
+              </div>
+            )}
+          </Button>
+        </div>
       ))}
     </div>
   );

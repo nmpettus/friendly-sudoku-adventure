@@ -17,7 +17,7 @@ const NumberControls = ({ onNumberSelect, completedNumbers }: NumberControlsProp
             className="h-8 w-8 sm:h-12 sm:w-12 text-base sm:text-xl font-semibold p-0"
             disabled={completedNumbers.includes(number)}
           >
-            {number}
+            {!completedNumbers.includes(number) && number}
             {completedNumbers.includes(number) && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <X className="h-6 w-6 text-[#cc0000] stroke-[3]" />

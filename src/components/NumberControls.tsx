@@ -20,7 +20,7 @@ const NumberControls = ({ onNumberSelect, completedNumbers }: NumberControlsProp
             {number}
             {completedNumbers.includes(number) && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <X className="h-6 w-6 text-[#ea384c]" />
+                <X className="h-6 w-6 text-[#cc0000] stroke-[3]" />
               </div>
             )}
           </Button>

@@ -5,6 +5,7 @@ import NumberControls from "@/components/NumberControls";
 import DifficultySelector from "@/components/DifficultySelector";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, HelpCircle } from "lucide-react";
+import Confetti from 'react-confetti';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ const Index = () => {
   const [grid, setGrid] = useState(() => generateSudoku(difficulty));
   const [initialGrid, setInitialGrid] = useState(() => grid.map(row => [...row]));
   const [completedNumbers, setCompletedNumbers] = useState<number[]>([]);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const handleNewGame = useCallback(() => {
     const newGrid = generateSudoku(difficulty);
@@ -29,6 +31,7 @@ const Index = () => {
     setInitialGrid(newGrid.map(row => [...row]));
     setSelectedCell(null);
     setCompletedNumbers([]);
+    setIsCompleted(false);
   }, [difficulty]);
 
   const handleCellSelect = (row: number, col: number) => {
@@ -55,6 +58,7 @@ const Index = () => {
     setInitialGrid(newGrid.map(row => [...row]));
     setSelectedCell(null);
     setCompletedNumbers([]);
+    setIsCompleted(false);
   };
 
   useEffect(() => {
@@ -74,10 +78,23 @@ const Index = () => {
       }
     }
     setCompletedNumbers(Array.from(numbers));
+
+    // Check if puzzle is completed
+    const isPuzzleCompleted = Array.from(numbers).length === 9;
+    setIsCompleted(isPuzzleCompleted);
   }, [grid]);
 
   return (
     <div className="min-h-screen bg-background p-4">
+      {isCompleted && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={500}
+          gravity={0.3}
+        />
+      )}
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-4">Sudoku</h1>
         

@@ -20,6 +20,7 @@ const SudokuBoard = ({
   const [completedCols, setCompletedCols] = useState<number[]>([]);
   const [completedBoxes, setCompletedBoxes] = useState<string[]>([]);
   const [wrongPlacements, setWrongPlacements] = useState<string[]>([]);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const isRowComplete = (row: number) => {
     const numbers = new Set(grid[row].filter(n => n !== 0));
@@ -89,6 +90,11 @@ const SudokuBoard = ({
         });
       });
       setWrongPlacements(newWrongPlacements);
+
+      // Check if all cells are filled and valid
+      const allFilled = grid.every(row => row.every(cell => cell !== 0));
+      const allValid = newWrongPlacements.length === 0;
+      setIsCompleted(allFilled && allValid);
 
       // Check for newly completed rows
       const newCompletedRows = Array.from({ length: 9 }, (_, i) => i)
@@ -170,6 +176,7 @@ const SudokuBoard = ({
                 !isWrong && isHighlightedRow && "bg-[#F2FCE2] animate-bloom",
                 !isWrong && isHighlightedCol && "bg-[#E5DEFF] animate-bloom",
                 !isWrong && isHighlightedBox && "bg-[#FEF7CD] animate-bloom",
+                isCompleted && "bg-[#FEF7CD]",
                 (colIndex + 1) % 3 === 0 && colIndex < 8 && "border-r-2 border-gray-400",
                 (rowIndex + 1) % 3 === 0 && rowIndex < 8 && "border-b-2 border-gray-400"
               )}
